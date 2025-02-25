@@ -93,12 +93,13 @@ pub async fn create_user(
     }
 }
 
-pub async fn get_user_by_id(State(state): State<AppStateType>, Path(id): Path<i32>) -> Json<Value> {
+pub async fn get_user_by_username_and_licence(State(state): State<AppStateType>, Path((username, licence)): Path<(String, String)>) -> Json<Value> {
     let state = state.read().await;
     let conn = &state.conn;
 
     match UserEntity::find()
-        .filter(User::Column::Id.eq(id))
+        .filter(User::Column::Username.eq(username))
+        .filter(User::Column::LicensePlate.eq(licence))
         .one(conn)
         .await
     {
