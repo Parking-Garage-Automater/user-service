@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::Arc;
 use tokio::sync::RwLock;
+use crate::helpers::auth::encode_jwt;
 
 #[derive(Deserialize)]
 pub struct CreateUser {
@@ -28,6 +29,15 @@ pub struct CreatedUser {
     licence: String,
     profile_url: String,
     payment_plan: bool,
+}
+
+#[derive(Serialize)]
+pub struct AuthorizedUser {
+    username: String,
+    licence: String,
+    profile_url: String,
+    payment_plan: bool,
+    token: String,
 }
 
 #[derive(Deserialize)]
@@ -106,12 +116,13 @@ pub async fn get_user_by_username_and_licence(State(state): State<AppStateType>,
         Ok(user) => match user {
             Some(user) => Json(json!({
                 "status": "success",
-                "data": CreatedUser {
-                    id: user.id,
-                    username: user.username,
-                    licence: user.license_plate,
+                "data": AuthorizedUser {
+                    username: String::from(&user.username),
+                    licence: String::from(&user.license_plate),
                     profile_url: user.profile_url,
                     payment_plan: user.payment_plan,
+                    token: encode_jwt(&user.license_plate, &user.username)
+                    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR).expect("Unexpected error occurred"),
                 }
             })),
             None => Json(json!({
