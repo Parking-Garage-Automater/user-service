@@ -1,14 +1,13 @@
 use crate::{AppState, AppStateType};
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use axum::Json;
 use entity::user as User;
 use entity::user::Entity as UserEntity;
 use sea_orm::ActiveValue::Set;
-use sea_orm::ColumnTrait;
+use sea_orm::{ColumnTrait, DatabaseConnection};
 use sea_orm::QueryFilter;
-use sea_orm::{ActiveModelTrait, DbErr, EntityTrait};
+use sea_orm::{ActiveModelTrait, EntityTrait};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::Arc;
@@ -20,6 +19,12 @@ pub struct CreateUser {
     username: String,
     licence: String,
     profile_url: String,
+}
+
+#[derive(Deserialize)]
+pub struct LoginUser {
+    username: String,
+    licence: String,
 }
 
 #[derive(Serialize)]
@@ -103,13 +108,13 @@ pub async fn create_user(
     }
 }
 
-pub async fn get_user_by_username_and_licence(State(state): State<AppStateType>, Path((username, licence)): Path<(String, String)>) -> Json<Value> {
+pub async fn signin_user(State(state): State<AppStateType>, Json(payload): Json<LoginUser>,) -> Json<Value> {
     let state = state.read().await;
     let conn = &state.conn;
 
     match UserEntity::find()
-        .filter(User::Column::Username.eq(username))
-        .filter(User::Column::LicensePlate.eq(licence))
+        .filter(User::Column::Username.eq(&payload.username))
+        .filter(User::Column::LicensePlate.eq(&payload.licence))
         .one(conn)
         .await
     {
@@ -127,7 +132,7 @@ pub async fn get_user_by_username_and_licence(State(state): State<AppStateType>,
             })),
             None => Json(json!({
                 "status": "error",
-                "message": "User not found"
+                "message": "User not found. Please do register"
             })),
         },
         Err(e) => {
@@ -136,6 +141,27 @@ pub async fn get_user_by_username_and_licence(State(state): State<AppStateType>,
                 "status": "error",
                 "message": "Failed to fetch user"
             }))
+        }
+    }
+}
+
+
+pub async fn is_valid_user(conn: &DatabaseConnection, username: &str, licence: &str) -> bool {
+
+
+    match UserEntity::find()
+        .filter(User::Column::Username.eq(username))
+        .filter(User::Column::LicensePlate.eq(licence))
+        .one(conn)
+        .await
+    {
+        Ok(user) => match user {
+            Some(_) => true,
+            None => false,
+        },
+        Err(e) => {
+            eprintln!("Error fetching user: {}", e);
+            false
         }
     }
 }

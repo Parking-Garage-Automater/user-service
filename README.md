@@ -19,6 +19,7 @@ docker-compose up -d
 Step 3. Add the environment variables to the .env file
 ```bash
 DATABASE_URL=postgres://postgres:user-service-data@localhost:5432/user-service-data
+JWT_SECRET_KEY=super-secret-key
 ```
 
 Step 4. Run the API
