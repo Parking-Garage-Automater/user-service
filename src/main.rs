@@ -3,7 +3,7 @@ mod helpers;
 use axum::http::header::CONTENT_TYPE;
 use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post, put};
-use axum::Router;
+use axum::{Router};
 use dotenvy::dotenv;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
@@ -51,9 +51,11 @@ async fn main() {
             "/api/manage/health",
             get(|| async { r#"{"status": "UP"}"# }),
         )
-        .route("/api/users/{username}/{licence}", get(helpers::users::get_user_by_username_and_licence))
-        .route("/api/users", post(helpers::users::create_user))
+        .route("/api/login", post(helpers::users::signin_user))
+        .route("/api/register", post(helpers::users::create_user))
         .route("/api/users/{id}", put(helpers::users::update_user))
+        .route("/api/verify", get(helpers::auth::authorize))
+    
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true)),
