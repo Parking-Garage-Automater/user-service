@@ -145,6 +145,40 @@ pub async fn signin_user(State(state): State<AppStateType>, Json(payload): Json<
     }
 }
 
+pub async fn get_user_by_licence(State(state): State<AppStateType>, Path((licence)): Path<(String)>) -> Json<Value> {
+    let state = state.read().await;
+    let conn = &state.conn;
+
+    match UserEntity::find()
+    .filter(User::Column::LicensePlate.eq(licence))
+    .one(conn)
+    .await
+    {
+        Ok(user) => match user {
+            Some(user) => Json(json!({
+                "status": "success",
+                "data": CreatedUser {
+                    id: user.id,
+                    username: user.username,
+                    licence: user.license_plate,
+                    profile_url: user.profile_url,
+                    payment_plan: user.payment_plan
+                }
+            })),
+            None => Json(json!({
+                "status": "error",
+                "message": "User not found"
+            })),
+        },
+        Err(e) => {
+            eprintln!("Error Fetching user: {}", e);
+            Json(json!({
+                "status": "error",
+                "message": "Failed to fetch user"
+            }))
+        }
+    }
+}
 
 pub async fn is_valid_user(conn: &DatabaseConnection, username: &str, licence: &str) -> bool {
 
