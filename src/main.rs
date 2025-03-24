@@ -51,7 +51,7 @@ async fn main() {
             "/api/manage/health",
             get(|| async { r#"{"status": "UP"}"# }),
         )
-        .route("/api/{licence}", get(helpers::users::get_user_by_licence))
+        .route("/api/users/{licence}", get(helpers::users::get_user_by_licence))
         .route("/api/login", post(helpers::users::signin_user))
         .route("/api/register", post(helpers::users::create_user))
         .route("/api/users/{id}", put(helpers::users::update_user))
