@@ -54,7 +54,7 @@ async fn main() {
         .route("/api/users/{licence}", get(helpers::users::get_user_by_licence))
         .route("/api/login", post(helpers::users::signin_user))
         .route("/api/register", post(helpers::users::create_user))
-        .route("/api/users/{id}", put(helpers::users::update_user))
+        .route("/api/users/update/{id}", put(helpers::users::update_user))
         .route("/api/verify", get(helpers::auth::authorize))
     
         .layer(
