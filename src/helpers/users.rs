@@ -145,7 +145,7 @@ pub async fn signin_user(State(state): State<AppStateType>, Json(payload): Json<
     }
 }
 
-pub async fn get_user_by_licence(State(state): State<AppStateType>, Path((licence)): Path<(String)>) -> Json<Value> {
+pub async fn get_user_by_licence(State(state): State<AppStateType>, Path(licence): Path<String>) -> Json<Value> {
     let state = state.read().await;
     let conn = &state.conn;
 
