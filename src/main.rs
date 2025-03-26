@@ -14,7 +14,7 @@ use tower_http::cors::CorsLayer;
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 use tracing::{info, log, subscriber, Level};
 
-const PORT: i32 = 8080;
+const PORT: i32 = 9001;
 
 pub type AppStateType = Arc<RwLock<AppState>>;
 
