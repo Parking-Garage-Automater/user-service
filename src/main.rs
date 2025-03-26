@@ -48,14 +48,14 @@ async fn main() {
 
     let app = Router::new()
         .route(
-            "/api/manage/health",
+            "/us/api/manage/health",
             get(|| async { r#"{"status": "UP"}"# }),
         )
-        .route("/api/users/{licence}", get(helpers::users::get_user_by_licence))
-        .route("/api/login", post(helpers::users::signin_user))
-        .route("/api/register", post(helpers::users::create_user))
-        .route("/api/users/update/{id}", put(helpers::users::update_user))
-        .route("/api/verify", get(helpers::auth::authorize))
+        .route("/us/api/users/{licence}", get(helpers::users::get_user_by_licence))
+        .route("/us/api/login", post(helpers::users::signin_user))
+        .route("/us/api/register", post(helpers::users::create_user))
+        .route("/us/api/users/update/{id}", put(helpers::users::update_user))
+        .route("/us/api/verify", get(helpers::auth::authorize))
     
         .layer(
             TraceLayer::new_for_http()
