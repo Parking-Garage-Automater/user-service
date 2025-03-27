@@ -3,7 +3,7 @@ mod helpers;
 use axum::http::header::CONTENT_TYPE;
 use axum::http::{HeaderValue, Method};
 use axum::routing::{get, post, put};
-use axum::{Router};
+use axum::Router;
 use dotenvy::dotenv;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
@@ -27,7 +27,7 @@ pub struct AppState {
 async fn main() {
     dotenv().ok();
 
-    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in the environment");
+    let db_url = env::var("USER_SERVICE_DATABASE_URL").expect("DATABASE_URL is not set in the environment");
     let mut opt = ConnectOptions::new(db_url);
     opt.sqlx_logging(false)
         .sqlx_logging_level(log::LevelFilter::Info);
