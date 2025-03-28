@@ -1,12 +1,10 @@
-FROM rust:1.82
-
-# 2. Copy the files in your machine to the Docker image
+FROM rust:1.82 as builder
+WORKDIR /app
 COPY ./ ./
-
-# Build your program for release
 RUN cargo build --release
 
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /app/target/release/user-service /usr/local/bin/
 EXPOSE 9001
-
-# Run the binary
-CMD ["./target/release/user-service"]
+CMD ["user-service"]
