@@ -43,6 +43,7 @@ pub struct AuthorizedUser {
     profile_url: String,
     payment_plan: bool,
     token: String,
+    id: i32
 }
 
 #[derive(Deserialize)]
@@ -122,6 +123,7 @@ pub async fn signin_user(State(state): State<AppStateType>, Json(payload): Json<
             Some(user) => Json(json!({
                 "status": "success",
                 "data": AuthorizedUser {
+                    id: user.id,
                     username: String::from(&user.username),
                     licence: String::from(&user.license_plate),
                     profile_url: user.profile_url,
