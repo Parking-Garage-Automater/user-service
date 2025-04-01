@@ -64,9 +64,9 @@ async fn main() {
         .layer(
             CorsLayer::new()
                 .allow_headers([CONTENT_TYPE])
-                .allow_methods([Method::GET, Method::POST])
-                .allow_origin("https://iot.nielstesting.nl".parse::<HeaderValue>().unwrap())
-                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap()), // .allow_origin("https://xxx.xxx.xxx".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET, Method::POST, Method::PUT, Method::OPTIONS, Method::DELETE, Method::PATCH])
+                .allow_origin("https://iot.nielstesting.nl".parse::<HeaderValue>().unwrap()) // .allow_origin("https://xxx.xxx.xxx".parse::<HeaderValue>().unwrap())
+                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap()),
         )
         .with_state(app_state);
 
